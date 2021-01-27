@@ -10,6 +10,22 @@
 // basically a port of method.coffee to stimulusjs
 // https://github.com/rails/rails/blob/main/actionview/app/assets/javascripts/rails-ujs/features/method.coffee
 //
+// not sure where to put this helper:
+//  // https://github.com/rails/rails/blob/291a3d2ef29a3842d1156ada7526f4ee60dd2b59/actionview/app/assets/javascripts/rails-ujs/utils/ajax.coffee#L83
+//  isCrossDomain(url) {
+//    let e, originAnchor, urlAnchor
+//    originAnchor = document.createElement('a')
+//    originAnchor.href = location.href
+//    urlAnchor = document.createElement('a')
+//
+//    try {
+//      urlAnchor.href = url
+//      return !(((!urlAnchor.protocol || urlAnchor.protocol === ':') && !urlAnchor.host) || (originAnchor.protocol + '//' + originAnchor.host === urlAnchor.protocol + '//' + urlAnchor.host))
+//    } catch (_error) {
+//      e = _error
+//      return true
+//    }
+//  }
 
 import { Controller } from "stimulus"
 
@@ -35,8 +51,20 @@ export default class extends Controller {
     let csrfParam = (el = document.querySelector('[name="csrf-param"]')) ? el.getAttribute('content') : null
     let form = document.createElement('form')
     let formContent = "<input name='_method' value='" + method + "' type='hidden' />"
+
     // Rails.isCrossDomain(href)
-    let isCrossDomain = false
+    // https://github.com/rails/rails/blob/291a3d2ef29a3842d1156ada7526f4ee60dd2b59/actionview/app/assets/javascripts/rails-ujs/utils/ajax.coffee#L83
+    let e, isCrossDomain
+    let originAnchor = document.createElement('a')
+    originAnchor.href = location.href
+    let urlAnchor = document.createElement('a')
+    try {
+      urlAnchor.href = href
+      isCrossDomain = !(((!urlAnchor.protocol || urlAnchor.protocol === ':') && !urlAnchor.host) || (originAnchor.protocol + '//' + originAnchor.host === urlAnchor.protocol + '//' + urlAnchor.host))
+    } catch (_error) {
+      e = _error
+      isCrossDomain = true
+    }
 
     //if csrfParam? and csrfToken? and not Rails.isCrossDomain(href)
     if (!!csrfParam && !!csrfToken && !isCrossDomain) {
