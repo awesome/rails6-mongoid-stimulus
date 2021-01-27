@@ -1,2 +1,6 @@
 %div{data: {controller: 'hello'}}
   %h1{data: {hello_target: "output"}}
+
+= link_to "delete", "/delete", method: :delete, data: {controller: 'link-to', action: 'click->link-to#method'}
+%br
+= link_to "delete", "/delete", method: :delete, data: {controller: 'link-to', action: 'click->link-to#method', confirm: 'Are you sure?'}
